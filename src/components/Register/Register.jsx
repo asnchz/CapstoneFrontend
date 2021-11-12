@@ -18,7 +18,7 @@ const Register = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.createNewUser(registerValues);
+    props.registerNewUser(registerValues);
   };
 
   return (

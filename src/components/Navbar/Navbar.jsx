@@ -1,22 +1,62 @@
-import React from "react";
-import "./Navbar.css";
+import React, { useState } from "react";
+import Logo from "../images/Sanchez Logo.png";
 import { Link } from "react-router-dom";
+import "./Navbar.css";
+import ReorderIcon from "@material-ui/icons/Reorder";
 
-const Navbar = (props) => {
+const Navbar = ({ user }) => {
+  const [openLinks, setOpenLinks] = useState(false);
+
+  const toggleNavbar = () => {
+    setOpenLinks(!openLinks);
+  };
+
   return (
-    <div className="nav">
-      <div>Vuela</div>
-      <div>
-        <ul>
-          <Link to="/"> Home</Link>
-          <Link to="/login">
-            <button onClick={props.loginUser}>Login</button>
-          </Link>
-          <Link to="/register">
-            <button onClick={props.createNewUser}>Sign Up</button>
-          </Link>
-        </ul>
-      </div>
+    <div className="navbar">
+      {!user && (
+        <React.Fragment>
+          <div className="nav-item" id={openLinks ? "open" : "close"}>
+            <img src={Logo} />
+            <h2>Vuela</h2>
+            <div className="hiddenLinks">
+              <Link to="/"> Home </Link>
+              <Link to="/register"> Register </Link>
+              <Link to="/login"> Login </Link>
+            </div>
+          </div>
+          <div className="rnav-item">
+            <Link to="/"> Home </Link>
+            <Link to="/register"> Register </Link>
+            <Link to="/login"> Login </Link>
+            <button onClick={toggleNavbar}>
+              <ReorderIcon />
+            </button>
+          </div>
+        </React.Fragment>
+      )}
+      {user && (
+        <React.Fragment>
+          <div className="nav-item" id={openLinks ? "open" : "close"}>
+            <img src={Logo} />
+            <h2>Vuela</h2>
+            <div className="hiddenLinks">
+              <Link to="/"> Home </Link>
+              <Link to="/about"> About </Link>
+              <Link to="/itinerary"> Itinerary </Link>
+              <Link to="/logout"> Logout </Link>
+            </div>
+          </div>
+          <div className="rnav-item">
+            <Link to="/"> Home </Link>
+            <Link to="/about"> About </Link>
+            <Link to="/itinerary"> Itinerary </Link>
+            <Link to="/logout"> Logout </Link>
+            <button onClick={toggleNavbar}>
+              <ReorderIcon />
+            </button>
+          </div>
+        </React.Fragment>
+      )}
     </div>
   );
 };

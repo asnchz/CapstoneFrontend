@@ -4,7 +4,7 @@ import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
-import { BrowserRouter as Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 class App extends Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class App extends Component {
     } catch (err) {}
   }
 
-  createNewUser = async (User) => {
+  registerNewUser = async (User) => {
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/auth/register/`,
@@ -53,21 +53,21 @@ class App extends Component {
     var user = this.state.user;
     return (
       <div>
-        <Navbar user={user} />
-        <div>
-          <Switch>
-            {/* <Route path="/profile" render={props =>{
-                        if (!user){
-                            return<Redirect to="/login" />;
-                        } else{
-                            return<Register {...props} user={user} />
-                        }
-                    }}
-                    /> */}
-            <Route path="/register" component={Register} />
-            <Route path="/login" component={Login} />
-          </Switch>
-        </div>
+        <Navbar user={user} logOutUser={this.logOutUser}/>
+          <Routes>
+          {/* <Route
+              path="/profile"
+              render={(props) => {
+                if (!this.state.user) {
+                  return (<Login {...props} loginUser={this.loginUser} />);}
+                // } else {
+                //   return( <ProductList {...props} productList={this.state.products} search={this.search} />);
+                // }
+              }}
+            /> */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
       </div>
     );
   }
