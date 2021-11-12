@@ -1,0 +1,97 @@
+.home {
+    width: 100%;
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .Container {
+    width: auto;
+    align-items: center;
+  }
+  
+  .Container h1 {
+    justify-content: center;
+    text-align: center;
+    font-size: 90px;
+    height: auto;
+    font-weight: 500;
+    color: black;
+    text-shadow: 2px 2px 5px white;
+  }
+  
+  .Container p {
+    font-size: 40px;
+    font-weight: bold;
+    color: black;
+    text-shadow: 2px 2px 5px white;
+    text-align: center;
+  }
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .Container button {
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: rgb(177, 177, 177);
+    height: 50px;
+    width: 180px;
+    color: white;
+    font-size: 20px;
+  }
+  
+  .Container button:hover {
+    background-color: black;
+    cursor: pointer;
+    transition: 0.3s ease-in;
+  }
+  
+  @media only screen and (max-width: 650px) {
+    .home {
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .Container {
+      margin-left: 0px;
+      border-radius: 10px;
+      padding: 10px;
+      width: 80%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background-color: rgb(177, 177, 177);
+    }
+  
+    .Container h1 {
+      font-size: 40px;
+      color: white;
+      text-shadow: 2px 2px black;
+    }
+  
+    .Container p {
+      font-size: 30px;
+      color: white;
+      text-shadow: 2px 2px black;
+    }
+  
+    .Container button {
+      background-color: white;
+      color: black;
+      margin-bottom: 30px;
+    }
+  
+    .Container button:hover {
+      background-color: rgb(225, 225, 225);
+      color: black;
+    }
+  }
+  
