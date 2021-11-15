@@ -1,0 +1,40 @@
+.title {
+  display: block;
+  align-items: center;
+  background-color: black;
+}
+.search {
+  width: 100%;
+  align-items: center;
+  position: relative;
+  border-radius: auto;
+  background-color: white;
+  width: 100%;
+}
+
+.searchIcon {
+  padding: 0, 2;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  color:white;
+}
+.inputRoot {
+  color: white;
+}
+.inputInput {
+  padding: 1, 1, 1, 0;
+  padding-left: 4px;
+  transition: ease-in-out;
+  width: 100%;
+  background-color: black;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: black;
+}

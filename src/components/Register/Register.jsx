@@ -48,7 +48,7 @@ function Register(props) {
   return (
     <div align="center" className="register">
       <h1>Register</h1>
-      <form  align="center" className="registerForm" onSubmit={handleSubmit}>
+      <form align="center" className="registerForm" onSubmit={handleSubmit}>
         <label>First Name</label>
         <Form.Group className="mb-3">
           <Form.Control

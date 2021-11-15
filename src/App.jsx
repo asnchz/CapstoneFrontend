@@ -1,137 +1,231 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import Home from "./components/Home/Home";
-import Trip from "./components/Trip/Trip";
-import { Route, Switch, Redirect } from 'react-router-dom';
-import {Grid} from '@material-ui/core'
+import ItineraryForm from "./components/ItineraryForm/ItineraryForm";
+import List from "./components/List/List";
+import Header from "./components/Header/Header";
+import Map from "./components/Map/Map";
+import { getPlacesData, getWeatherData } from "./api/APIs";
+import { CssBaseline, Grid } from "@material-ui/core";
+import { Route, Switch} from "react-router-dom";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: "",
-      location:"",
-      jwtToken: null,
-    };
-  }
-  componentDidMount() {
-    const jwt = localStorage.getItem("token");
-    try {
-      const user = jwtDecode(jwt);
-      this.setState({ user });
-    } catch (err) {}
-  }
+const App = () => {
+    const [user, setUser] = useState(null)
+    const [places, setPlaces] = useState([]);
+    const [childClicked, setChildClicked] = useState(null);
+    const [coordinates, setCoordinates] = useState({});
+    const [bounds, setBounds] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [type, setType] = useState("restaurants");
+    const [rating, setRating]= useState("");
+    const [filteredPlaces, setFilteredPlaces] = useState([]);
+    const [weatherData, setWeatherData] = useState([]);
+    const [autocomplete, setAutocomplete] = useState(null);
 
-  registerNewUser = async (registerUser) => {
+    useEffect(()=>{
+      navigator.geolocation.getCurrentPosition(({ coords: {latitude, longitude} }) => {
+        setCoordinates({lat: latitude, lng: longitude});
+      })
+    }, []);
+
+    useEffect(() => {
+      const filtered = places.filter((place) => Number(place.rating) > rating);
+  
+      setFilteredPlaces(filtered);
+    }, [rating]);
+
+    useEffect(() => {
+      if(bounds){
+      setIsLoading(true);
+        getWeatherData(coordinates.lat, coordinates.lng)
+        .then((data) => setWeatherData(data));
+
+        getPlacesData(type, bounds.sw, bounds.ne)
+            .then((data) => {
+              setPlaces(data?.filter((place) => place.name && place.num_reviews > 0));
+              setFilteredPlaces([]);
+              setRating('');
+              setIsLoading(false);
+            })
+          }
+        }, [bounds, type]);
+
+        const onLoad = (autoC) => setAutocomplete(autoC);
+
+        const onPlaceChanged = () => {
+          const lat = autocomplete.getPlace().geometry.location.lat();
+          const lng = autocomplete.getPlace().geometry.location.lng();
+      
+          setCoordinates({ lat, lng });
+        };
+
+    useEffect(() => {
+      if (localStorage.getItem('token')){
+        getUserInfo()
+      }
+    }, [])
+
+  const registerNewUser = async (registerUser) => {
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/auth/register/`,
-        registerUser
-      )
-    } catch (err) {
-      console.log("Error registering new user. Please try again", err);
+      await axios.post(`http://127.0.0.1:8000/api/auth/register/`, registerUser)
+      loginUser({"username" : registerUser.username, "password": registerUser.password})
+    } catch (error) {
+      console.log("Error registering new user. Please try again", error);
     }
   };
 
-  loginUser = async (loggedInUser) => {
+  const loginUser = async (loggedInUser) => {
     try {
-      const response = await axios.post(
+      let response = await axios.post(
         "http://127.0.0.1:8000/api/auth/login/",
         loggedInUser
-      )
-      localStorage.setItem("token", response.data.token);
-    } catch (err) {
-      console.log("Username and/or Password invalid. Please try again", err);
-    }
-  };
-
-  logOutUser = async () => {
-    localStorage.removeItem("token");
-  };
-
-  getAllLocations = async () => {
-    try {
-        let response = await axios.get("http://127.0.0.1:8000/api/locations/all/");
-        this.setState({
-            location: response.data,
-        });
+      );
+      localStorage.setItem("token", response.data.token)
+          getUserInfo();
+          window.location="/home"
     } catch (error) {
-        console.log("Error", error);
+      console.log("Username and/or Password invalid. Please try again", error);
     }
   };
 
-  createItinerary = async (newItinerary) => {
-    try {
-      let response = await axios.post("http://127.0.0.1:8000/api/itinerary/" ,newItinerary, {
-      headers: {
-        Authorization: "Bearer" + this.state.jwtToken},
-      });
+  const getUserInfo = () => {
+    try{
+      const userInfo = jwtDecode(localStorage.getItem('token'))
+      setUser(userInfo)
     }catch(error){
+    }
+  }
+
+  const logoutUser = async() => {
+    try{
+      localStorage.removeItem('token')
+      setUser(null);
+      window.location = "/"
+    }catch (error) {
+          console.log("Error", error);
+    }
+  }
+
+  // const getAllLocations = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://127.0.0.1:8000/api/locations/all/"
+  //     );
+  //     this.setState({
+  //       location: response.data,
+  //     });
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //   }
+  // };
+
+  const createItinerary = async (newItinerary) => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/itinerary/",
+        newItinerary,
+        {
+          headers: {
+            Authorization: "Bearer" + this.state.jwtToken,
+          },
+        }
+      );
+    } catch (error) {
       console.log("Failed to create itinerary. Please try again.", error);
     }
-  }
+  };
 
-  viewItinerary = async (viewItin) => {
-    try {
-      let response = await axios.get("http://127.0.0.1:8000/api/itinerary/", viewItin, {
-        headers: {
-          Authorization: "Bearer" + this.state.jwtToken},
-      });
-    }catch(error){
-      console.log("Failed to retrieve itineraries. Please try again.", error);
-    }
-  }
+  // const viewItinerary = async (viewItin) => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://127.0.0.1:8000/api/itinerary/",
+  //       viewItin,
+  //       {
+  //         headers: {
+  //           Authorization: "Bearer" + this.state.jwtToken,
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log("Failed to retrieve itineraries. Please try again.", error);
+  //   }
+  // };
 
-  deleteItinerary = async (deleteItin) => {
-    try {
-      let response = await axios.get("http://127.0.0.1:8000/api/itinerary/delete", deleteItin, {
-        headers: {
-          Authorization: "Bearer" + this.state.jwtToken},
-      });
-    }catch(error){
-      console.log("Failed to delete itinerary. Please try again.", error);
-    }
-  }
+  // const deleteItinerary = async (deleteItin) => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://127.0.0.1:8000/api/itinerary/delete",
+  //       deleteItin,
+  //       {
+  //         headers: {
+  //           Authorization: "Bearer" + this.state.jwtToken,
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log("Failed to delete itinerary. Please try again.", error);
+  //   }
+  // };
 
-  updateItinerary = async (updateItin) => {
-    try {
-      let response = await axios.get("http://127.0.0.1:8000/api/itinerary/delete", updateItin, {
-        headers: {
-          Authorization: "Bearer" + this.state.jwtToken},
-      });
-    }catch(error){
-      console.log("Failed to update itinerary. Please try again.", error);
-    }
-  }
-
-  render () {
-    var user = this.state.user;
-    return(
+  // const updateItinerary = async (updateItin) => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://127.0.0.1:8000/api/itinerary/delete",
+  //       updateItin,
+  //       {
+  //         headers: {
+  //           Authorization: "Bearer" + this.state.jwtToken,
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log("Failed to update itinerary. Please try again.", error);
+  //   }
+  // }
+   
+    return (
+      <>
       <Grid>
-        <Navbar user={user} logOutUser={this.logOutUser}/>
+      <Navbar logoutUser = {logoutUser}/>
         <div className="App">
-        <Switch>
-          <Route path="/home" exact render={props => {
-          if(!user){
-            return <Redirect to="/login" />
-          }
-        else{
-          return <Home {...props} user={user} />
-        }}
-      }/>
-          <Route path="/" exact component={Home}/>
-          <Route path = "/register" render={props => <Register {...props} registerNewUser={this.registerNewUser}/>}/>
-          <Route path="/login" render={props => <Login {...props} loginUser={this.loginUser}/>}/>
-          <Route path="/location" render={props => <Trip {...props} getAllLocations={this.getAllLocations}/>}/>
+          <Switch>
+          <Route path = "/" exact render = {props => <Home {...props} user = {user}/>} />
+            <Route path = "/login" render = {props => <Login {...props} loginUser = {loginUser}/>} />
+            <Route path = "/register" render = {props => <Register {...props} registerNewUser = {registerNewUser} />} />
+            <Route path = "/itinerary" render = {props => <ItineraryForm {...props} createItinerary={createItinerary} />} />
+            {<><CssBaseline /><Header path="/destination" onPlaceChanged={onPlaceChanged} onLoad={onLoad}/>
+            <Grid container spacing={3} style={{ width: '100%' }}>
+              <Grid item xs={12} md={4}>
+                <List 
+                  childClicked={childClicked}
+                  IsLoading={isLoading}
+                  places={filteredPlaces.length ? filteredPlaces : places}
+                  type={type}
+                  setType={setType}
+                  rating={rating}
+                  setRating={setRating}
+                  />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <Map 
+                  setCoordinates={setCoordinates}
+                  setBounds={setBounds}
+                  coordinates={coordinates}
+                  places={filteredPlaces.length ? filteredPlaces : places}
+                  setChildClicked={setChildClicked}
+                  weatherData={weatherData}
+                />
+              </Grid>
+            </Grid></>}
           </Switch>
-      </div> 
-      </Grid> 
+        </div>
+      </Grid>
+      </>
     );
-  }
-}
+};
 
 export default App;

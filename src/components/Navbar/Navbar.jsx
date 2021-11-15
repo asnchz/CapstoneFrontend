@@ -1,5 +1,6 @@
 import Logo from "../images/Logo.png";
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import ReorderIcon from "@material-ui/icons/Reorder";
@@ -19,17 +20,15 @@ const Navbar = (props) => {
           VUELA
         </Link>
         <div className="hiddenLinks">
-        {props.user &&<Link to="/destination"> Destinations </Link>}
-          {props.user &&<Link to="/reviews"> Reviews </Link>}
-          {!props.user &&<Link to="/register"> Register </Link>}
-          {props.user &&<Link to="/login">Logout</Link>}
+          <Link to="/destination"> Destinations </Link>
+          <Link to="/itinerary"> My Itinerary </Link>
+          <Link to="/register"> Register </Link>
         </div>
       </div>
       <div className="rnav-item">
-      {props.user &&<Link to="/destination"> Destinations </Link>}
-      {props.user &&<Link to="/reviews"> Reviews </Link>}
-      {!props.user &&<Link to="/register"> Register </Link>}
-        {props.user &&<Link to="/login">Logout</Link>}
+        <Link to="/destination"> Destinations </Link>
+        <Link to="/itinerary"> My Itinerary </Link>
+        <Link to="/register"> Register </Link>
         <button onClick={toggleNavbar}>
           <ReorderIcon />
         </button>
