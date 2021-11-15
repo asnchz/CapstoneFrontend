@@ -5,7 +5,8 @@ import Navbar from "./components/Navbar/Navbar";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import Home from "./components/Home/Home";
-import { Route, Routes } from "react-router-dom";
+import { Route, Switch, Redirect } from 'react-router-dom';
+import {Grid} from '@material-ui/core'
 
 class App extends Component {
   constructor(props) {
@@ -22,24 +23,23 @@ class App extends Component {
     } catch (err) {}
   }
 
-  registerNewUser = async (User) => {
+  registerNewUser = async (registerUser) => {
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/auth/register/`,
-        User
-      );
-      localStorage.setItem("token", response.data.token);
+        registerUser
+      )
     } catch (err) {
       console.log("Error registering new user. Please try again", err);
     }
   };
 
-  loginUser = async (Login) => {
+  loginUser = async (loggedInUser) => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/auth/login/",
-        Login
-      );
+        loggedInUser
+      )
       localStorage.setItem("token", response.data.token);
     } catch (err) {
       console.log("Username and/or Password invalid. Please try again", err);
@@ -50,27 +50,27 @@ class App extends Component {
     localStorage.removeItem("token");
   };
 
-  render() {
+  render () {
     var user = this.state.user;
-    return (
-      <div>
+    return(
+      <Grid>
         <Navbar user={user} logOutUser={this.logOutUser}/>
-          <Routes>
-          {/* <Route
-              path="/profile"
-              render={(props) => {
-                if (!this.state.user) {
-                  return (<Login {...props} loginUser={this.loginUser} />);}
-                // } else {
-                //   return( <ProductList {...props} productList={this.state.products} search={this.search} />);
-                // }
-              }}
-            /> */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-      </div>
+        <div className="App">
+        <Switch>
+          <Route path="/Home" exact render={props => {
+          if(!user){
+            return <Redirect to="/Login" />
+          }
+        else{
+          return <Home {...props} user={user} />
+        }}
+      }/>
+          <Route path="/" exact component={Home}/>
+          <Route path = "/Register" render={props => <Register {...props} registerNewUser={this.registerNewUser}/>}/>
+          <Route path="/Login" render={props => <Login {...props} loginUser={this.loginUser}/>}/>
+          </Switch>
+      </div> 
+      </Grid> 
     );
   }
 }
