@@ -26,7 +26,6 @@
   color: white;
 }
 .inputInput {
-  padding: 1, 1, 1, 0;
   padding-left: 4px;
   transition: ease-in-out;
   width: 100%;
@@ -36,5 +35,8 @@
 .toolbar {
   display: flex;
   justify-content: space-between;
+  background-color: black;
+}
+.Box{
   background-color: black;
 }

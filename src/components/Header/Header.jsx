@@ -1,16 +1,19 @@
-import React from "react";
-import { Autocomplete } from "@react-google-maps/api";
-import { AppBar, Typography, InputBase, Box } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
+import React from 'react';
+import { Autocomplete } from '@react-google-maps/api';
+import { AppBar, Toolbar, Typography, InputBase, Box } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
 import "./Header.css";
 
 const Header = ({ onPlaceChanged, onLoad }) => {
  
   return (
     <AppBar position="static">
-        <Box display="flex" className="title">
-          <Typography varient="h6" className="title">
-            Discover New Places!
+       <Toolbar className="toolbar">
+       <Typography variant="h5" className="title">
+        </Typography>
+        <Box display="flex" >
+          <Typography varient="h" className="title">
+           
           </Typography>
           <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
             <div className="search">
@@ -27,6 +30,7 @@ const Header = ({ onPlaceChanged, onLoad }) => {
             </div>
           </Autocomplete>
         </Box>
+        </Toolbar>
     </AppBar>
   );
 };
