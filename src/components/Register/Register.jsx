@@ -1,36 +1,32 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
-import { Button } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 
-function Register(props) {
+const Register = (props) => {
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
-  const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [username, setUsername] = useState();
 
-  const handleFirstName = (event) => {
+  const handleFirstChange = (event) => {
     setFirstName(event.target.value);
-    console.log("firstName", firstName);
   };
 
-  const handleLastName = (event) => {
+  const handleLastChange = (event) => {
     setLastName(event.target.value);
-    console.log("lastName", lastName);
   };
 
-  const handleEmail = (event) => {
+  const handleEmailChange = (event) => {
     setEmail(event.target.value);
-    console.log("email", email);
   };
 
-  const handleUsername = (event) => {
+  const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
 
-  const handlePassword = (event) => {
+  const handlePasswordChange = (event) => {
     setPassword(event.target.value);
-    console.log("password", password);
   };
 
   const handleSubmit = (event) => {
@@ -38,24 +34,23 @@ function Register(props) {
     const registerUser = {
       first_name: firstName,
       last_name: lastName,
-      email: email,
       username: username,
+      email: email,
       password: password,
     };
     props.registerNewUser(registerUser);
   };
 
   return (
-    <div align="center" className="register">
-      <h1>Register</h1>
-      <form align="center" className="registerForm" onSubmit={handleSubmit}>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <h1> Register </h1>
         <label>First Name</label>
         <Form.Group className="mb-3">
           <Form.Control
             type="text"
             placeholder="Enter your first name..."
-            onChange={handleFirstName}
-            // value={registerValues.firstName}
+            onChange={handleFirstChange}
           />
         </Form.Group>
         <label>Last Name</label>
@@ -63,17 +58,15 @@ function Register(props) {
           <Form.Control
             type="text"
             placeholder="Enter your last name..."
-            // value={registerValues.lastName}
-            onChange={handleLastName}
+            onChange={handleLastChange}
           />
         </Form.Group>
         <label>Email</label>
         <Form.Group className="mb-3">
           <Form.Control
-            type="text"
+            type="email"
             placeholder="Enter your email..."
-            // value={registerValues.email}
-            onChange={handleEmail}
+            onChange={handleEmailChange}
           />
         </Form.Group>
         <label>Username</label>
@@ -81,8 +74,7 @@ function Register(props) {
           <Form.Control
             type="text"
             placeholder="Enter your username..."
-            // value={registerValues.username}
-            onChange={handleUsername}
+            onChange={handleUsernameChange}
           />
         </Form.Group>
         <label>Password</label>
@@ -90,16 +82,15 @@ function Register(props) {
           <Form.Control
             type="password"
             placeholder="Enter your password..."
-            // value={registerValues.password}
-            onChange={handlePassword}
+            onChange={handlePasswordChange}
           />
         </Form.Group>
         <Button type="submit" variant="contained" class="btn btn-success">
           Register
         </Button>
+        <Grid style={{ marginLeft: "850px" }}></Grid>
       </form>
     </div>
   );
-}
-
+};
 export default Register;

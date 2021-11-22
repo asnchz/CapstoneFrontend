@@ -17,10 +17,10 @@
   height: 100%;
   position: absolute;
   pointer-events: none;
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  color:white;
+  color: white;
 }
 .inputRoot {
   color: white;
@@ -37,6 +37,6 @@
   justify-content: space-between;
   background-color: black;
 }
-.Box{
+.Box {
   background-color: black;
 }

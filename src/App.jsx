@@ -11,12 +11,12 @@ import Header from "./components/Header/Header";
 import Map from "./components/Map/Map";
 import { getPlacesData, getWeatherData } from "./api/APIs";
 import { CssBaseline, Grid } from "@material-ui/core";
-import { Route, Switch} from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 const App = () => {
-  const [type, setType] = useState('restaurants');
-  const [rating, setRating] = useState('');
-  const [user, setUser] = useState('');
+  const [type, setType] = useState("restaurants");
+  const [rating, setRating] = useState("");
+  const [user, setUser] = useState("");
 
   const [coords, setCoords] = useState({});
   const [bounds, setBounds] = useState(null);
@@ -30,9 +30,11 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
-      setCoords({ lat: latitude, lng: longitude });
-    });
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setCoords({ lat: latitude, lng: longitude });
+      }
+    );
   }, []);
 
   useEffect(() => {
@@ -45,16 +47,16 @@ const App = () => {
     if (bounds) {
       setIsLoading(true);
 
-      getWeatherData(coords.lat, coords.lng)
-        .then((data) => setWeatherData(data));
+      getWeatherData(coords.lat, coords.lng).then((data) =>
+        setWeatherData(data)
+      );
 
-      getPlacesData(type, bounds.sw, bounds.ne)
-        .then((data) => {
-          setPlaces(data.filter((place) => place.name && place.num_reviews > 0));
-          setFilteredPlaces([]);
-          setRating('');
-          setIsLoading(false);
-        });
+      getPlacesData(type, bounds.sw, bounds.ne).then((data) => {
+        setPlaces(data.filter((place) => place.name && place.num_reviews > 0));
+        setFilteredPlaces([]);
+        setRating("");
+        setIsLoading(false);
+      });
     }
   }, [bounds, type]);
 
@@ -67,20 +69,20 @@ const App = () => {
     setCoords({ lat, lng });
   };
 
-    useEffect(() => {
-      if (localStorage.getItem('token')){
-        getUserInfo()
-      }
-    }, [])
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      getUserInfo();
+    }
+  }, []);
 
   const registerNewUser = async (registerUser) => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/auth/register/`, registerUser)
-      loginUser({"username" : registerUser.username, "password": registerUser.password})
-      window.location="/home"
-    } catch (error) {
-      console.log("Error registering new user. Please try again", error);
-    }
+      let response = await axios.post(
+        `http://127.0.0.1:8000/api/auth/register/`,
+        registerUser
+      );
+      window.location = "/login";
+    } catch (err) {}
   };
 
   const loginUser = async (loggedInUser) => {
@@ -89,31 +91,30 @@ const App = () => {
         "http://127.0.0.1:8000/api/auth/login/",
         loggedInUser
       );
-      localStorage.setItem("token", response.data.token)
-          getUserInfo();
-          window.location="/home"
+      localStorage.setItem("token", response.data.token);
+      getUserInfo();
+      window.location = "/home";
     } catch (error) {
       console.log("Username and/or Password invalid. Please try again", error);
     }
   };
 
   const getUserInfo = () => {
-    try{
-      const userInfo = jwtDecode(localStorage.getItem('token'))
-      setUser(userInfo)
-    }catch(error){
-    }
-  }
+    try {
+      const userInfo = jwtDecode(localStorage.getItem("token"));
+      setUser(userInfo);
+    } catch (error) {}
+  };
 
-  const logoutUser = async() => {
-    try{
-      localStorage.removeItem('token')
+  const logoutUser = async () => {
+    try {
+      localStorage.removeItem("token");
       setUser(null);
-      window.location = "/"
-    }catch (error) {
-          console.log("Error", error);
+      window.location = "/home";
+    } catch (error) {
+      console.log("Error", error);
     }
-  }
+  };
 
   // const getAllLocations = async () => {
   //   try {
@@ -127,18 +128,21 @@ const App = () => {
   //     console.log("Error", error);
   //   }
   // };
+  const getAllItineraries = async () => {
+    try {
+      await axios.get("http://127.0.0.1:8000/api/itinerary/all/");
+    } catch (error) {
+      console.log("Failed to display itineraries. Please try again.", error);
+    }
+  };
 
   const createItinerary = async (newItinerary) => {
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/itinerary/",
-        newItinerary,
-        {
-          headers: {
-            Authorization: "Bearer" + this.state.jwtToken,
-          },
-        }
+      await axios.post(
+        "http://127.0.0.1:8000/api/itinerary/userlocation/",
+        newItinerary
       );
+      getAllItineraries();
     } catch (error) {
       console.log("Failed to create itinerary. Please try again.", error);
     }
@@ -191,46 +195,81 @@ const App = () => {
   //     console.log("Failed to update itinerary. Please try again.", error);
   //   }
   // }
-   
-    return (
-      <>
+
+  return (
+    <>
       <Grid>
-      <Navbar logoutUser = {logoutUser}/>
+        <Navbar logoutUser={logoutUser} />
         <div className="App">
           <Switch>
-          <Route path = "/" exact render = {props => <Home {...props} user = {user}/>} />
-            <Route path = "/login" render = {props => <Login {...props} loginUser = {loginUser}/>} />
-            <Route path = "/register" render = {props => <Register {...props} registerNewUser = {registerNewUser} />} />
-            <Route path = "/itinerary" render = {props => <ItineraryForm {...props} createItinerary={createItinerary} />} />
-            {<><CssBaseline /><Header path="/destination" onPlaceChanged={onPlaceChanged} onLoad={onLoad}/>
-            <Grid container spacing={3} style={{ width: '100%' }}>
-              <Grid item xs={12} md={4}>
-                <List 
-                   isLoading={isLoading}
-                   childClicked={childClicked}
-                   places={filteredPlaces.length ? filteredPlaces : places}
-                   type={type}
-                   setType={setType}
-                   rating={rating}
-                   setRating={setRating}
-                  />
-              </Grid>
-              <Grid item xs={12} md={8} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Map
-            setChildClicked={setChildClicked}
-            setBounds={setBounds}
-            setCoords={setCoords}
-            coords={coords}
-            places={filteredPlaces.length ? filteredPlaces : places}
-            weatherData={weatherData}
-          />
-        </Grid>
-            </Grid></>}
+            <Route
+              path="/"
+              exact
+              render={(props) => <Home {...props} user={user} />}
+            />
+            <Route
+              path="/login"
+              render={(props) => <Login {...props} loginUser={loginUser} />}
+            />
+            <Route
+              path="/register"
+              render={(props) => (
+                <Register {...props} registerNewUser={registerNewUser} />
+              )}
+            />
+            <Route
+              path="/itinerary"
+              render={(props) => (
+                <ItineraryForm {...props} createItinerary={createItinerary} />
+              )}
+            />
+            {
+              <>
+                <CssBaseline />
+                <Header
+                  path="/destination"
+                  onPlaceChanged={onPlaceChanged}
+                  onLoad={onLoad}
+                />
+                <Grid container spacing={3} style={{ width: "100%" }}>
+                  <Grid item xs={12} md={4}>
+                    <List
+                      isLoading={isLoading}
+                      childClicked={childClicked}
+                      places={filteredPlaces.length ? filteredPlaces : places}
+                      type={type}
+                      setType={setType}
+                      rating={rating}
+                      setRating={setRating}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    md={8}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Map
+                      setChildClicked={setChildClicked}
+                      setBounds={setBounds}
+                      setCoords={setCoords}
+                      coords={coords}
+                      places={filteredPlaces.length ? filteredPlaces : places}
+                      weatherData={weatherData}
+                    />
+                  </Grid>
+                </Grid>
+              </>
+            }
           </Switch>
         </div>
       </Grid>
-      </>
-    );
+    </>
+  );
 };
 
 export default App;
