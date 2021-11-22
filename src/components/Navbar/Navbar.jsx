@@ -21,12 +21,14 @@ const Navbar = (props) => {
         </Link>
         <div className="hiddenLinks">
           <Link to="/destination"> Destinations </Link>
+          <Link to="/trips"> Trips </Link>
           <Link to="/itinerary"> My Itinerary </Link>
           <Link to="/register"> Register </Link>
         </div>
       </div>
       <div className="rnav-item">
         <Link to="/destination"> Destinations </Link>
+        <Link to="/trips"> Trips </Link>
         <Link to="/itinerary"> My Itinerary </Link>
         <Link to="/register"> Register </Link>
         <button onClick={toggleNavbar}>

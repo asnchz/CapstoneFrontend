@@ -6,7 +6,7 @@ class ItineraryForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: "",
+      user_id: "",
       details: "",
       location: "",
       review: "",
@@ -15,7 +15,7 @@ class ItineraryForm extends Component {
 
   handleUserChange = (event) => {
     this.setState({
-      user: event.target.value,
+        user_id: event.target.value,
     });
   };
 
@@ -40,10 +40,10 @@ class ItineraryForm extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const itinerary = {
-      user: this.state.user,
+      user_id: this.state.user_id,
       details: this.state.details,
       location: this.state.location,
-      review: this.state.review,
+      review: parseInt(this.state.review),
     };
     this.props.createItinerary(itinerary);
   };
@@ -57,13 +57,13 @@ class ItineraryForm extends Component {
         <div className="rightSide">
           <h1>My Itinerary</h1>
           <form onSubmit={this.handleSubmit} id="itinerary-form" method="POST">
-            <label htmlFor="name">Full Name</label>
+            <label htmlFor="name">Username</label>
             <input
               name="name"
-              placeholder="Enter full name..."
+              placeholder="Enter your username..."
               type="text"
               onChange={this.handleUserChange}
-              value={this.state.user}
+              value={this.state.user_id}
             />
             <label htmlFor="destination">Destination</label>
             <input
@@ -82,6 +82,14 @@ class ItineraryForm extends Component {
               value={this.state.details}
               required
             ></textarea>
+            <label htmlFor="review">Rating</label>
+            <input
+              name="review"
+              placeholder="..."
+              type="number"
+              onChange={this.handleReviewChange}
+              value={this.state.review}
+            />
             <button type="submit">Share Adventure!</button>
           </form>
         </div>

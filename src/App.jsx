@@ -9,6 +9,7 @@ import ItineraryForm from "./components/ItineraryForm/ItineraryForm";
 import List from "./components/List/List";
 import Header from "./components/Header/Header";
 import Map from "./components/Map/Map";
+import Trips from "./components/Trips/Trips"
 import { getPlacesData, getWeatherData } from "./api/APIs";
 import { CssBaseline, Grid } from "@material-ui/core";
 import { Route, Switch } from "react-router-dom";
@@ -116,18 +117,6 @@ const App = () => {
     }
   };
 
-  // const getAllLocations = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "http://127.0.0.1:8000/api/locations/all/"
-  //     );
-  //     this.setState({
-  //       location: response.data,
-  //     });
-  //   } catch (error) {
-  //     console.log("Error", error);
-  //   }
-  // };
   const getAllItineraries = async () => {
     try {
       await axios.get("http://127.0.0.1:8000/api/itinerary/all/");
@@ -139,7 +128,7 @@ const App = () => {
   const createItinerary = async (newItinerary) => {
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/itinerary/userlocation/",
+        "http://127.0.0.1:8000/api/itinerary/",
         newItinerary
       );
       getAllItineraries();
@@ -221,6 +210,12 @@ const App = () => {
               path="/itinerary"
               render={(props) => (
                 <ItineraryForm {...props} createItinerary={createItinerary} />
+              )}
+            />
+            <Route
+              path="/trips"
+              render={(props) => (
+                <Trips {...props} getAllItineraries={getAllItineraries} />
               )}
             />
             {
